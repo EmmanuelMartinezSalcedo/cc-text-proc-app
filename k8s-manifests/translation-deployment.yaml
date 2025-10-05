@@ -15,6 +15,7 @@ spec:
     spec:
       containers:
         - name: translation
-          image: nginx:stable
+          image: translation:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 80
+            - containerPort: 5000
