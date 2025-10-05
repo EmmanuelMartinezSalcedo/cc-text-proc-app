@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: indigo29/frontend:latest
+          image: frontend:latest
           ports:
             - containerPort: 80
