@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: texto-app
+  namespace: database
 spec:
   replicas: 1
   selector:
@@ -27,7 +27,7 @@ spec:
             - containerPort: 5432
           volumeMounts:
             - name: postgres-data
-              mountPath: /var/lib/postgresql/data
+              mountPath: /var/lib/postgresql/data/pgdata
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
