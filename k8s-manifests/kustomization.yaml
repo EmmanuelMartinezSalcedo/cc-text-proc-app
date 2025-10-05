@@ -1,12 +1,25 @@
-apiVersion: kustomize.toolkit.fluxcd.io/v1
+apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-metadata:
-  name: texto-app
-  namespace: texto-app
-spec:
-  interval: 1m
-  path: "./k8s-manifests"
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: texto-app
+resources:
+  - analytics-deployment.yaml
+  - analytics-service.yaml
+  - backend-deployment.yaml
+  - backend-service.yaml
+  - editing-deployment.yaml
+  - editing-service.yaml
+  - fluentd-daemonset.yaml
+  - frontend-deployment.yaml
+  - frontend-service.yaml
+  - gitrepo.yaml
+  - keywords-deployment.yaml
+  - keywords-service.yaml
+  - kustomization.yaml
+  - postgres-deployment.yaml
+  - postgres-pvc.yaml
+  - postgres-service.yaml
+  - prometheus-deployment.yaml
+  - prometheus-service.yaml
+  - summary-deployment.yaml
+  - summary-service.yaml
+  - translation-deployment.yaml
+  - translation-service.yaml
