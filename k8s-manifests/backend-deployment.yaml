@@ -15,6 +15,20 @@ spec:
     spec:
       containers:
         - name: backend
-          image: nginx:stable
+          image: backend:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 80
+            - containerPort: 4000
+          env:
+            - name: PORT
+              value: "4000"
+            - name: DB_USER
+              value: "postgres"
+            - name: DB_PASSWORD
+              value: "password"
+            - name: DB_HOST
+              value: "postgres-service.database.svc.cluster.local"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE
+              value: "textoapp"
