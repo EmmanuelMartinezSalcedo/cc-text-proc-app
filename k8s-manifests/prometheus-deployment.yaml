@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: summary
+  name: prometheus
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: summary
+      app: prometheus
   template:
     metadata:
       labels:
-        app: summary
+        app: prometheus
     spec:
       containers:
-        - name: summary
-          image: nginx:stable
+        - name: prometheus
+          image: prom/prometheus:latest
           ports:
-            - containerPort: 80
+            - containerPort: 9090

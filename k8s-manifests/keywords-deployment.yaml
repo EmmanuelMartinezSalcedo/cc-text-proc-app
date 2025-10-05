@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keywords
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keywords
+  template:
+    metadata:
+      labels:
+        app: keywords
+    spec:
+      containers:
+        - name: keywords
+          image: nginx:stable
+          ports:
+            - containerPort: 80
