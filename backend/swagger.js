@@ -5,7 +5,7 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Backend Simple con Usuarios",
+      title: "Backend",
       version: "1.0.0",
       description: "API para registro y login de usuarios",
     },
@@ -15,7 +15,7 @@ const options = {
       },
     ],
   },
-  apis: ["./users.js", "./translation.js"],
+  apis: ["./users.js", "./translation.js", "./summary.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

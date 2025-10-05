@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
 app.get("/health", (req, res) => {
-  res.json({ status: "ok", service: "traduccion" });
+  res.json({ status: "ok", service: "resumen" });
 });
 
 app.post("/summarize", async (req, res) => {
@@ -49,5 +49,5 @@ app.post("/summarize", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Microservicio Traducción corriendo en puerto ${PORT}`);
+  console.log(`Microservicio Resumen corriendo en puerto ${PORT}`);
 });
