@@ -3,6 +3,7 @@ kind: Kustomization
 metadata:
   name: texto-app
 resources:
+  - namespaces.yaml
   - analytics-deployment.yaml
   - analytics-service.yaml
   - backend-deployment.yaml
