@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/users", userRoutes);
-app.use("/microservice/translation", translationRoutes);
+app.use("/microservices/translation", translationRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

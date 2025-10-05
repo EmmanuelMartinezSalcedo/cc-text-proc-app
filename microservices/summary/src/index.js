@@ -7,7 +7,7 @@ import { GoogleGenAI } from "@google/genai";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -18,17 +18,17 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "traduccion" });
 });
 
-app.post("/translate", async (req, res) => {
-  const { text, targetLang } = req.body;
+app.post("/summarize", async (req, res) => {
+  const { text } = req.body;
 
-  if (!text || !targetLang) {
-    return res.status(400).json({ error: "Missing text or targetLang" });
+  if (!text) {
+    return res.status(400).json({ error: "Missing text" });
   }
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Translate the following text to ${targetLang} and respond **ONLY** with a JSON object: {"translated": "..."}. Text: "${text}"`,
+      contents: `Summarize the following text and respond **ONLY** with a JSON object: {"summary": "..."}.\nText: "${text}"`,
     });
 
     let cleaned = response.text
@@ -36,15 +36,15 @@ app.post("/translate", async (req, res) => {
       .replace(/```/g, "")
       .trim();
 
-    const translatedJson = JSON.parse(cleaned);
+    const summaryJson = JSON.parse(cleaned);
 
     res.json({
       original: text,
-      translated: translatedJson.translated,
+      summary: summaryJson.summary,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Translation failed" });
+    res.status(500).json({ error: "Summarization failed" });
   }
 });
 

@@ -5,10 +5,10 @@ const router = express.Router();
 
 /**
  * @swagger
- * /microservice/translation:
+ * /microservices/translation:
  *   post:
  *     summary: Traduce texto usando el microservicio de traducción
- *     tags: [Microservice]
+ *     tags: [Microservices]
  *     requestBody:
  *       required: true
  *       content:
