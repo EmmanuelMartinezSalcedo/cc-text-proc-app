@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import userRoutes from "./users.js";
 import translationRoutes from "./translation.js";
 import summaryRoutes from "./summary.js";
+import keywordsRoutes from "./keywords.js";
 import { swaggerUi, swaggerSpec } from "./swagger.js";
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/microservices/translation", translationRoutes);
 app.use("/microservices/summary", summaryRoutes);
+app.use("/microservices/keywords", keywordsRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

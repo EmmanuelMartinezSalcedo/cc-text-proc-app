@@ -15,6 +15,7 @@ spec:
     spec:
       containers:
         - name: keywords
-          image: nginx:stable
+          image: keywords:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 80
+            - containerPort: 5002
