@@ -10,3 +10,9 @@ spec:
   sourceRef:
     kind: GitRepository
     name: texto-app
+  targetNamespace: texto-app
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: postgres
+      namespace: texto-app
