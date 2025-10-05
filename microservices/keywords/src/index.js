@@ -28,7 +28,7 @@ app.post("/keywords", async (req, res) => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Extract the top ${count} keywords from the following text and respond **ONLY** with a JSON array: {"keywords": ["..."]}.\nText: "${text}"`,
+      contents: `Extract the top ${count} keywords from the following text, preserving the original language. Respond **ONLY** with a JSON array: {"keywords": ["..."]}.\nText: "${text}"`,
     });
 
     let cleaned = response.text

@@ -6,6 +6,7 @@ import translationRoutes from "./translation.js";
 import summaryRoutes from "./summary.js";
 import keywordsRoutes from "./keywords.js";
 import editingRoutes from "./editing.js";
+import analyticsRoutes from "./analytics.js";
 import { swaggerUi, swaggerSpec } from "./swagger.js";
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use("/microservices/translation", translationRoutes);
 app.use("/microservices/summary", summaryRoutes);
 app.use("/microservices/keywords", keywordsRoutes);
 app.use("/microservices/editing", editingRoutes);
+app.use("/microservices/analytics", analyticsRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

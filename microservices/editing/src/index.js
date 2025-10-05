@@ -14,12 +14,10 @@ app.use(bodyParser.json());
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
-// Health check
 app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "editing" });
 });
 
-// Endpoint de edición/corrección
 app.post("/edit", async (req, res) => {
   const { text, style } = req.body;
 
@@ -30,7 +28,7 @@ app.post("/edit", async (req, res) => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Improve and correct the following text. Respond **ONLY** with a JSON object: {"edited": "..."}. Style: ${
+      contents: `Improve and correct the following text, preserving the original language. Respond **ONLY** with a JSON object: {"edited": "..."}. Style: ${
         style || "normal"
       }.\nText: "${text}"`,
     });

@@ -21,6 +21,7 @@ const options = {
     "./summary.js",
     "./keywords.js",
     "./editing.js",
+    "./analytics.js",
   ],
 };
 

@@ -15,6 +15,7 @@ spec:
     spec:
       containers:
         - name: analytics
-          image: nginx:stable
+          image: analytics:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 80
+            - containerPort: 5004
