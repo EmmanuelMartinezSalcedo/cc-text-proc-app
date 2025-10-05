@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: texto-app
+  namespace: texto-app
+spec:
+  interval: 1m
+  url: https://github.com/EmmanuelMartinezSalcedo/cc-text-proc-app.git
+  ref:
+    branch: main
