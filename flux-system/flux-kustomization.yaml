@@ -14,4 +14,4 @@ spec:
     - apiVersion: apps/v1
       kind: Deployment
       name: postgres
-      namespace: texto-app
+      namespace: database
