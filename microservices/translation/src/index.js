@@ -39,7 +39,6 @@ app.post("/translate", async (req, res) => {
     const translatedJson = JSON.parse(cleaned);
 
     res.json({
-      original: text,
       translated: translatedJson.translated,
     });
   } catch (error) {

@@ -39,7 +39,6 @@ app.post("/keywords", async (req, res) => {
     const keywordsJson = JSON.parse(cleaned);
 
     res.json({
-      original: text,
       keywords: keywordsJson.keywords,
     });
   } catch (error) {

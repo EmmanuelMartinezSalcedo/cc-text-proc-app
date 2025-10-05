@@ -15,6 +15,7 @@ spec:
     spec:
       containers:
         - name: editing
-          image: nginx:stable
+          image: editing:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 80
+            - containerPort: 5003

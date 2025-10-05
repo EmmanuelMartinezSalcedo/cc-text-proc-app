@@ -39,7 +39,6 @@ app.post("/summarize", async (req, res) => {
     const summaryJson = JSON.parse(cleaned);
 
     res.json({
-      original: text,
       summary: summaryJson.summary,
     });
   } catch (error) {
