@@ -32,13 +32,13 @@ const router = express.Router();
  *         description: Usuario registrado con éxito
  */
 router.post("/register", async (req, res) => {
+  const { name, email, password } = req.body;
   try {
-    const { name, email, password } = req.body;
-
     const exists = await pool.query("SELECT * FROM users WHERE email=$1", [
       email,
     ]);
     if (exists.rows.length > 0) {
+      console.warn(`⚠️ Registro fallido: correo ya registrado (${email})`);
       return res.status(400).json({ error: "El correo ya está registrado" });
     }
 
@@ -50,9 +50,12 @@ router.post("/register", async (req, res) => {
       [name, email, hashed]
     );
 
+    console.log(`✅ Usuario registrado: ${email}`);
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("❌ ERROR en /users/register:");
+    console.error("Mensaje:", err.message);
+    console.error("Stack:", err.stack);
     res.status(500).json({ error: "Error en el servidor" });
   }
 });
@@ -82,25 +85,29 @@ router.post("/register", async (req, res) => {
  *         description: Login exitoso, devuelve el usuario
  */
 router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const { email, password } = req.body;
-
     const result = await pool.query("SELECT * FROM users WHERE email=$1", [
       email,
     ]);
     if (result.rows.length === 0) {
+      console.warn(`⚠️ Login fallido: usuario no encontrado (${email})`);
       return res.status(400).json({ error: "Credenciales inválidas" });
     }
 
     const user = result.rows[0];
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
+      console.warn(`⚠️ Login fallido: contraseña inválida (${email})`);
       return res.status(400).json({ error: "Credenciales inválidas" });
     }
 
+    console.log(`✅ Login exitoso: ${email}`);
     res.json({ id: user.id, name: user.name, email: user.email });
   } catch (err) {
-    console.error(err);
+    console.error("❌ ERROR en /users/login:");
+    console.error("Mensaje:", err.message);
+    console.error("Stack:", err.stack);
     res.status(500).json({ error: "Error en el servidor" });
   }
 });

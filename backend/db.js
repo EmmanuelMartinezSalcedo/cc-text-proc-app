@@ -1,8 +1,7 @@
 import pkg from "pg";
-const { Pool } = pkg;
 import dotenv from "dotenv";
-
 dotenv.config();
+const { Pool } = pkg;
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -11,5 +10,17 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
 });
+
+pool
+  .connect()
+  .then((client) => {
+    console.log("✅ Conectado a Postgres correctamente");
+    client.release();
+  })
+  .catch((err) => {
+    console.error("❌ Error conectando a Postgres:");
+    console.error(err.message);
+    console.error(err.stack);
+  });
 
 export default pool;
