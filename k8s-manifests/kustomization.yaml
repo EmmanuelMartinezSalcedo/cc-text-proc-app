@@ -18,7 +18,9 @@ resources:
   - postgres-deployment.yaml
   - postgres-pvc.yaml
   - postgres-service.yaml
+  - prometheus-config.yaml
   - prometheus-deployment.yaml
+  - prometheus-rbac.yaml
   - prometheus-service.yaml
   - summary-deployment.yaml
   - summary-service.yaml
@@ -27,3 +29,7 @@ resources:
   - logs-pvc.yaml
   - fluentd-config.yaml
   - fluentd-daemonset.yaml
+  - grafana-deployment.yaml
+  - grafana-service.yaml
+  - kube-state-metrics.yaml
+  - node-exporter.yaml
