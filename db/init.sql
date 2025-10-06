@@ -13,7 +13,7 @@ CREATE TABLE users (
 CREATE TABLE requests (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    service_type VARCHAR(50) NOT NULL CHECK (service_type IN ('translation', 'summary', 'analytics', 'improvement', 'keywords')),
+    service_type VARCHAR(50) NOT NULL CHECK (service_type IN ('translation', 'summary', 'analytics', 'editing', 'keywords')),
     input_text TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -22,8 +22,7 @@ CREATE TABLE requests (
 CREATE TABLE responses (
     id SERIAL PRIMARY KEY,
     request_id INT NOT NULL UNIQUE,
-    output_text TEXT,
-    metadata JSON,
+    output_json JSON,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE
 );

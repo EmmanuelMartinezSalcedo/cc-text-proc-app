@@ -1,5 +1,6 @@
 import express from "express";
 import axios from "axios";
+import pool from "./db.js";
 
 const router = express.Router();
 
@@ -16,8 +17,12 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             required:
+ *               - user_id
  *               - text
+ *               - style
  *             properties:
+ *               user_id:
+ *                 type: integer
  *               text:
  *                 type: string
  *               style:
@@ -28,21 +33,47 @@ const router = express.Router();
  *         description: Texto editado
  */
 router.post("/", async (req, res) => {
-  const { text, style } = req.body;
+  const { user_id, text, style } = req.body;
 
-  if (!text) {
-    return res.status(400).json({ error: "Falta parámetro text" });
+  if (!user_id || !text || !style) {
+    return res
+      .status(400)
+      .json({ error: "Faltan parámetros user_id, text o style" });
   }
 
+  let requestId;
+
   try {
+    const requestResult = await pool.query(
+      `INSERT INTO requests (user_id, service_type, input_text, created_at)
+       VALUES ($1, $2, $3, NOW()) RETURNING id`,
+      [user_id, "editing", text]
+    );
+    requestId = requestResult.rows[0].id;
+
     const response = await axios.post(
       "http://editing-service.microservice.svc.cluster.local:5003/edit",
       { text, style }
     );
 
-    res.json(response.data);
+    await pool.query(
+      `INSERT INTO responses (request_id, output_json, created_at)
+       VALUES ($1, $2, NOW())`,
+      [requestId, JSON.stringify(response.data)]
+    );
+
+    res.json({ edited: response.data.edited });
   } catch (err) {
     console.error("❌ ERROR en /microservice/editing:", err.message);
+
+    if (requestId) {
+      await pool.query(
+        `INSERT INTO responses (request_id, output_json, created_at)
+         VALUES ($1, $2, NOW())`,
+        [requestId, JSON.stringify({ error: err.message })]
+      );
+    }
+
     res
       .status(500)
       .json({ error: "Error llamando al microservicio de editing" });

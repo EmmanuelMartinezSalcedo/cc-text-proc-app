@@ -7,7 +7,7 @@ const options = {
     info: {
       title: "Backend",
       version: "1.0.0",
-      description: "API para registro y login de usuarios",
+      description: "API backend",
     },
     servers: [
       {
