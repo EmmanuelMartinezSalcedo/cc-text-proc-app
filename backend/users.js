@@ -112,4 +112,113 @@ router.post("/login", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /users/history:
+ *   delete:
+ *     summary: Borra el historial de un usuario (requests y responses)
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - user_id
+ *             properties:
+ *               user_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Historial borrado correctamente
+ */
+router.delete("/history", async (req, res) => {
+  const { user_id } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "Falta parámetro user_id" });
+  }
+
+  try {
+    const requestResult = await pool.query(
+      "SELECT id FROM requests WHERE user_id=$1",
+      [user_id]
+    );
+
+    const requestIds = requestResult.rows.map((r) => r.id);
+
+    if (requestIds.length > 0) {
+      await pool.query("DELETE FROM responses WHERE request_id = ANY($1)", [
+        requestIds,
+      ]);
+
+      await pool.query("DELETE FROM requests WHERE id = ANY($1)", [requestIds]);
+    }
+
+    console.log(`🗑️ Historial borrado para el usuario ${user_id}`);
+    res.json({ message: "Historial borrado correctamente" });
+  } catch (err) {
+    console.error("❌ ERROR en /users/history:", err.message);
+    console.error(err.stack);
+    res.status(500).json({ error: "Error borrando el historial" });
+  }
+});
+
+/**
+ * @swagger
+ * /users/history:
+ *   get:
+ *     summary: Obtiene el historial de un usuario (requests y responses)
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: user_id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Historial del usuario
+ */
+router.get("/history", async (req, res) => {
+  const user_id = parseInt(req.query.user_id, 10);
+
+  if (!user_id) {
+    return res.status(400).json({ error: "Falta parámetro user_id" });
+  }
+
+  try {
+    const requestResult = await pool.query(
+      "SELECT id, service_type, input_text, created_at FROM requests WHERE user_id=$1 ORDER BY created_at DESC",
+      [user_id]
+    );
+
+    const history = [];
+
+    for (const reqRow of requestResult.rows) {
+      const responseResult = await pool.query(
+        "SELECT output_json, created_at FROM responses WHERE request_id=$1",
+        [reqRow.id]
+      );
+
+      history.push({
+        request_id: reqRow.id,
+        service_type: reqRow.service_type,
+        input_text: reqRow.input_text,
+        request_created_at: reqRow.created_at,
+        response: responseResult.rows[0]?.output_json || null,
+        response_created_at: responseResult.rows[0]?.created_at || null,
+      });
+    }
+
+    res.json({ user_id, history });
+  } catch (err) {
+    console.error("❌ ERROR en GET /users/history:", err.message);
+    console.error(err.stack);
+    res.status(500).json({ error: "Error obteniendo el historial" });
+  }
+});
+
 export default router;
