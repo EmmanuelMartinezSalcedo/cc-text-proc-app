@@ -24,3 +24,6 @@ resources:
   - summary-service.yaml
   - translation-deployment.yaml
   - translation-service.yaml
+  - logs-pvc.yaml
+  - fluentd-config.yaml
+  - fluentd-daemonset.yaml
