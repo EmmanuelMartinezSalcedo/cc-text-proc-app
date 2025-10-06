@@ -1,0 +1,224 @@
+<div class="flex flex-col h-screen bg-gray-50">
+  <!-- Header fijo -->
+  <header
+    class="fixed top-0 left-0 right-0 bg-white shadow-md z-50 flex items-center justify-between px-6 py-3"
+  >
+    <h1 class="text-lg font-bold text-gray-800">Procesador de Texto</h1>
+    <button
+      class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+      (click)="onDeleteHistory()"
+    >
+      Eliminar Historial
+    </button>
+  </header>
+
+  <!-- Área de historial con scroll -->
+  <div #scrollContainer class="flex-1 overflow-y-auto p-4">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="flex items-center justify-center h-full">
+      <div class="text-gray-500">Cargando historial...</div>
+    </div>
+
+    <!-- History items -->
+    <div
+      *ngIf="!isLoading && history.length > 0"
+      class="max-w-4xl mx-auto space-y-4"
+    >
+      <div
+        *ngFor="let item of history"
+        class="bg-white rounded-lg shadow p-4 border border-gray-200"
+      >
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span
+              class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+            >
+              {{ getServiceTypeLabel(item.service_type) }}
+            </span>
+            <span class="text-xs text-gray-500">
+              {{ formatDate(item.request_created_at) }}
+            </span>
+          </div>
+          <span class="text-xs text-gray-400">ID: {{ item.request_id }}</span>
+        </div>
+
+        <!-- Input text -->
+        <div class="mb-3">
+          <div class="text-xs font-semibold text-gray-600 mb-1">Entrada:</div>
+          <div
+            class="text-sm text-gray-700 bg-gray-50 p-3 rounded border border-gray-200"
+          >
+            {{ item.input_text }}
+          </div>
+        </div>
+
+        <!-- Response -->
+        <div>
+          <div class="text-xs font-semibold text-gray-600 mb-1">Respuesta:</div>
+
+          <!-- Error response -->
+          <div
+            *ngIf="hasError(item.response)"
+            class="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded border border-red-200"
+          >
+            <link
+              href="https://fonts.googleapis.com/icon?family=Material+Icons"
+              rel="stylesheet"
+            />
+            <span class="material-icons text-red-600">error</span>
+            <span class="text-sm">{{ item.response.error }}</span>
+          </div>
+
+          <!-- Translation response -->
+          <div
+            *ngIf="!hasError(item.response) && item.service_type === 'translation'"
+            class="text-sm text-gray-700 bg-green-50 p-3 rounded border border-green-200"
+          >
+            {{ item.response.translated }}
+          </div>
+
+          <!-- Summary response -->
+          <div
+            *ngIf="!hasError(item.response) && item.service_type === 'summary'"
+            class="text-sm text-gray-700 bg-purple-50 p-3 rounded border border-purple-200"
+          >
+            {{ item.response.summary }}
+          </div>
+
+          <!-- Editing response -->
+          <div
+            *ngIf="!hasError(item.response) && item.service_type === 'editing'"
+            class="text-sm text-gray-700 bg-yellow-50 p-3 rounded border border-yellow-200"
+          >
+            {{ item.response.edited }}
+          </div>
+
+          <!-- Keywords response -->
+          <div
+            *ngIf="!hasError(item.response) && item.service_type === 'keywords'"
+            class="bg-indigo-50 p-3 rounded border border-indigo-200"
+          >
+            <div class="flex flex-wrap gap-2">
+              <span
+                *ngFor="let keyword of item.response.keywords"
+                class="px-2 py-1 bg-indigo-200 text-indigo-800 rounded text-xs font-medium"
+              >
+                {{ keyword }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Analytics response -->
+          <div
+            *ngIf="!hasError(item.response) && item.service_type === 'analytics'"
+            class="text-sm text-gray-700 bg-blue-50 p-3 rounded border border-blue-200"
+          >
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <span class="font-semibold">Sentimiento:</span> {{
+                item.response.sentiment }}
+              </div>
+              <div>
+                <span class="font-semibold">Palabras:</span> {{
+                item.response.wordCount }}
+              </div>
+              <div>
+                <span class="font-semibold">Oraciones:</span> {{
+                item.response.sentenceCount }}
+              </div>
+              <div class="col-span-2">
+                <span class="font-semibold">Temas principales:</span>
+                <ul class="list-disc list-inside ml-2 mt-1">
+                  <li *ngFor="let topic of item.response.mainTopics">
+                    {{ topic }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Response timestamp -->
+        <div class="mt-2 text-xs text-gray-400 text-right">
+          Procesado: {{ formatDate(item.response_created_at) }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div
+      *ngIf="!isLoading && history.length === 0"
+      class="flex items-center justify-center h-full"
+    >
+      <div class="text-gray-500 text-center">
+        <p class="text-lg mb-2">No hay historial disponible</p>
+        <p class="text-sm">Comienza procesando un texto</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel inferior fijo -->
+  <div class="bg-white shadow-lg border-t border-gray-200 p-4">
+    <form [formGroup]="form" (ngSubmit)="process()" class="max-w-4xl mx-auto">
+      <div class="flex flex-col gap-3">
+        <!-- Primera fila: Textarea -->
+        <div class="w-full">
+          <textarea
+            formControlName="text"
+            placeholder="Ingresa tu texto aquí..."
+            class="w-full min-h-[80px] max-h-[200px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+          ></textarea>
+        </div>
+
+        <!-- Segunda fila: Controles y botón -->
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Selector de acción -->
+          <select
+            formControlName="selectedAction"
+            class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+          >
+            <option *ngFor="let action of actions" [value]="action">
+              {{ action }}
+            </option>
+          </select>
+
+          <!-- Input condicional según la acción seleccionada -->
+          <input
+            *ngIf="showExtraInput() === 'style'"
+            formControlName="style"
+            type="text"
+            placeholder="Estilo"
+            class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+
+          <input
+            *ngIf="showExtraInput() === 'count'"
+            formControlName="count"
+            type="number"
+            placeholder="Cantidad"
+            min="1"
+            class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-24"
+          />
+
+          <input
+            *ngIf="showExtraInput() === 'language'"
+            formControlName="language"
+            type="text"
+            placeholder="Idioma"
+            class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+
+          <!-- Botón Procesar -->
+          <button
+            type="submit"
+            class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            [disabled]="form.invalid"
+          >
+            Procesar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

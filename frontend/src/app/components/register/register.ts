@@ -9,13 +9,13 @@ import { Router } from '@angular/router';
 import { UserService } from '../../services/user-service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   imports: [ReactiveFormsModule],
-  templateUrl: './login.html',
-  styleUrl: './login.css',
+  templateUrl: './register.html',
+  styleUrl: './register.css',
 })
-export class Login {
-  loginForm: FormGroup;
+export class Register {
+  registerForm: FormGroup;
   loading = false;
   error = '';
 
@@ -24,22 +24,23 @@ export class Login {
     private userService: UserService,
     private router: Router
   ) {
-    this.loginForm = this.fb.group({
+    this.registerForm = this.fb.group({
+      name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
   }
 
-  login() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+  register() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 
     this.loading = true;
     this.error = '';
 
-    this.userService.login(this.loginForm.value).subscribe({
+    this.userService.register(this.registerForm.value).subscribe({
       next: (res) => {
         this.loading = false;
         sessionStorage.setItem('user_id', res.id.toString());
@@ -48,16 +49,19 @@ export class Login {
       error: (err) => {
         this.loading = false;
         this.error = 'Invalid credentials or server error';
-        console.error('Login failed:', err);
+        console.error('Register failed:', err);
       },
     });
   }
+  get name() {
+    return this.registerForm.get('name');
+  }
 
   get email() {
-    return this.loginForm.get('email');
+    return this.registerForm.get('email');
   }
 
   get password() {
-    return this.loginForm.get('password');
+    return this.registerForm.get('password');
   }
 }

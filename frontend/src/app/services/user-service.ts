@@ -13,6 +13,12 @@ interface LoginRequest {
   password: string;
 }
 
+interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -23,5 +29,15 @@ export class UserService {
 
   login(data: LoginRequest): Observable<User> {
     return this.http.post<User>(`${this.baseUrl}/login`, data);
+  }
+
+  register(data: RegisterRequest): Observable<User> {
+    return this.http.post<User>(`${this.baseUrl}/register`, data);
+  }
+
+  deleteHistory(userId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/history`, {
+      body: { user_id: userId },
+    });
   }
 }
