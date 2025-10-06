@@ -14,12 +14,19 @@ spec:
       labels:
         app: fluentd
     spec:
+      initContainers:
+        - name: create-log-dir
+          image: busybox:latest
+          command: ["sh", "-c", "mkdir -p /data/logs && chmod 777 /data/logs"]
+          volumeMounts:
+            - name: logs-data
+              mountPath: /data
       containers:
         - name: fluentd
           image: fluent/fluentd:v1.16-debian-1
           volumeMounts:
             - name: logs-data
-              mountPath: /data/logs
+              mountPath: /data
             - name: varlog
               mountPath: /var/log/containers
             - name: fluentd-config
